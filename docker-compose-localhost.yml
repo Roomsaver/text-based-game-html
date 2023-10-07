@@ -1,0 +1,27 @@
+version: '3'
+
+networks:
+  tfk_network:
+    external:
+      name: traefik_tfk_network
+
+
+services:
+  webapp:
+    container_name: tba-webapp
+    restart: 'always'
+    build: ./
+    networks:
+      - tfk_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.tba.entrypoints=web,websecure"
+      - "traefik.http.routers.tba.tls.certresolver=myresolver"
+      - "traefik.http.routers.tba.rule=Host(`app.tba.localhost`)"
+      - "traefik.http.services.tba.loadbalancer.server.port=80"
+      - "traefik.http.routers.tba.tls=true"
+      - "traefik.docker.network=traefik_tfk_network"
+
+
+volumes:
+      database:
